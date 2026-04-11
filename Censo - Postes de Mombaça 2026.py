@@ -30,6 +30,7 @@ ruas.sort()
 
 @app.route('/')
 def index():
+    # Removido o escape duplo aqui para que o join funcione corretamente antes de entrar no HTML
     opcoes_bairros = "".join([f'<option value="{b}">{b}</option>' for b in bairros])
     opcoes_ruas = "".join([f'<option value="{r}">{r}</option>' for r in ruas])
 
@@ -40,6 +41,7 @@ def index():
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Censo Poste | Mombaça 2026</title>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
           :root {{
               --primary: #007bff;
@@ -68,30 +70,30 @@ def index():
               max-width: 405px; 
               border: 1px solid #333; 
           }}
-          h1 {{ text-align: center; font-size: 23px; margin-bottom: 27px; color: var(--primary); letter-spacing: -1px; }}
+          h1 {{ text-align: center; font-size: 21px; margin-bottom: 27px; color: var(--primary); letter-spacing: -1px; }}
           .field-group {{ margin-bottom: 18px; }}
           label {{ display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-dim); }}
           
           input[type="text"], select {{ 
               width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background-color: var(--input); 
-              color: white; box-sizing: border-box; font-size: 15px; outline: none;
+              color: white; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.3s;
           }}
-              /* Container das listas com bordas arredondadas */
-          .search-select-box {{ border: 2px solid #333; border-radius: 15px; overflow: hidden; background: var(--input);transition: 0.4s;}}
-          .search-select-box {{ border: 1px solid #333; border-radius: 8px; overflow: hidden; background: var(--input); }}
-          .search-select-box input {{ border: none; border-bottom: 1px solid #333; border-radius: 0; background: transparent; }}
+
+          .search-select-box {{ border: 2px solid #333; border-radius: 12px; overflow: hidden; background: var(--input); }}
+          .search-select-box input {{ border: none; border-bottom: 2px solid #333; border-radius: 0; background: transparent; }}
           .search-select-box select {{ border: none; border-radius: 0; background: transparent; height: 150px; cursor: pointer; }}
 
-          /* EFEITO VIBRANTE (ANIMAÇÃO) */
           @keyframes glow-vibration {{
               0% {{ box-shadow: 0 0 5px var(--primary); border-color: var(--primary); }}
               50% {{ box-shadow: 0 0 20px var(--primary); border-color: #00c3ff; }}
               100% {{ box-shadow: 0 0 5px var(--primary); border-color: var(--primary); }}
           }}
 
-          .vibrar {{
+          .vibrar-input {{
               animation: glow-vibration 1.5s infinite ease-in-out;
-              border-color: var(--primary) !important;
+              border: 2px solid var(--primary) !important;
+              border-radius: 8px !important;
+              z-index: 1;
           }}
 
           button {{ 
@@ -99,7 +101,7 @@ def index():
               color: white; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s ease;
               margin-top: 10px; 
           }}
-          button:hover {{ background: #0056b3; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,123,255,0.3); }}
+          button:hover {{ background: #0056b3; transform: translateY(-2px); }}
       
           option {{ padding: 12px; border-bottom: 1px solid #2a2a2a; }}
           option:checked {{ background-color: var(--primary) !important; color: white; }}
@@ -108,10 +110,10 @@ def index():
     <body>
     <div class="container">  
       <h1>CENSO | POSTES DE MOMBAÇA 2026</h1>
-      <form action="/salvar" method="post">
-          <div class="field-group">
+      <form id="formCenso">
+        <div class="field-group">
              <label>ID do Poste</label>
-             <input type="text" name="id_poste" placeholder="Ex: P-117" required>
+             <input type="text" id="id_poste" name="id_poste" placeholder="Ex: P-117" required oninput="ativarBrilhoID()">
         </div>
 
         <div class="field-group">
@@ -120,7 +122,7 @@ def index():
                 <input type="text" id="busca_bairro" placeholder="Pesquisar Bairro" 
                        onkeyup="filtrarLista('busca_bairro', 'select_bairro')">
                 <select name="bairro" id="select_bairro" size="5" required 
-                        onchange="preencherBusca('select_bairro', 'busca_bairro')">
+                        onchange="preencherBusca('select_bairro', 'busca_bairro', 'busca_bairro')">
                      {opcoes_bairros}  
                 </select>
             </div>
@@ -132,47 +134,81 @@ def index():
                 <input type="text" id="busca_rua" placeholder="Pesquisar Rua/Av" 
                        onkeyup="filtrarLista('busca_rua', 'select_rua')">
                 <select name="rua" id="select_rua" size="5" required 
-                        onchange="preencherBusca('select_rua', 'busca_rua')">
+                        onchange="preencherBusca('select_rua', 'busca_rua', 'busca_rua')">
                      {opcoes_ruas}
                 </select>
             </div>
         </div> 
 
-        <button type="submit">💾 Salvar na Nuvem</button>
+        <button type="button" onclick="enviarDados()">💾 Salvar na Nuvem</button>
       </form>
     </div>
 
     <script>
-        // Filtra a lista enquanto digita
+        function ativarBrilhoID() {{
+            const inputID = document.getElementById('id_poste');
+            inputID.value.trim() !== "" ? inputID.classList.add('vibrar-input') : inputID.classList.remove('vibrar-input');
+        }}
+
         function filtrarLista(idInput, idSelect) {{
             var input = document.getElementById(idInput);
             var filter = input.value.toUpperCase();
             var select = document.getElementById(idSelect);
             var options = select.getElementsByTagName('option');
-
             for (var i = 0; i < options.length; i++) {{
                 var txtValue = options[i].textContent || options[i].innerText;
                 options[i].style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
             }}
         }}
 
-        // Novo: Copia o item selecionado para a barra de busca
-        function preencherBusca(idSelect, idInput) {{
+        function preencherBusca(idSelect, idInput, idElementoVibrar) {{
             var select = document.getElementById(idSelect);
             var input = document.getElementById(idInput);
+            var elementoVibrar = document.getElementById(idElementoVibrar);
             input.value = select.value;
+            elementoVibrar.classList.add('vibrar-input');
+        }}
 
-            // Preenche o campo de busca
-            input.value = select.value;
-            
-            // Adiciona a classe de vibração/brilho
-            box.classList.add('vibrar');
+        function enviarDados() {{
+            const form = document.getElementById('formCenso');
+            const formData = new FormData(form);
+            const btn = form.querySelector('button');
+
+            btn.innerText = "⏳ SALVANDO...";
+            btn.disabled = true;
+
+            fetch('/salvar', {{
+                method: 'POST',
+                body: formData
+            }})
+            .then(response => {{
+                if (response.ok) {{
+                    Swal.fire({{
+                        title: 'Sucesso!',
+                        text: 'Dados salvos na Nuvem!',
+                        icon: 'success',
+                        background: '#1e1e1e',
+                        color: '#fff',
+                        confirmButtonColor: '#007bff'
+                    }});
+                    form.reset();
+                    document.getElementById('id_poste').classList.remove('vibrar-input');
+                    document.getElementById('busca_bairro').classList.remove('vibrar-input');
+                    document.getElementById('busca_rua').classList.remove('vibrar-input');
+                }} else {{
+                    Swal.fire('Erro', 'Falha ao salvar na Nuvem', 'error');
+                }}
+            }})
+            .catch(error => Swal.fire('Erro Técnico', error.message, 'error'))
+            .finally(() => {{
+                btn.innerText = "💾 Salvar na Nuvem";
+                btn.disabled = false;
+            }});
         }}
     </script> 
     </body>
     </html>
     '''     
-
     return render_template_string(html)
 
 def fazer_backup_s3(nome_arquivo):
@@ -198,7 +234,7 @@ def salvar():
         escritor.writerow([id_poste, bairro_selecionado, rua_selecionada]) 
 
     fazer_backup_s3(nome_arquivo)
-    return "<h1>✅ Salvo com Sucesso!</h1><a href='/'>Voltar</a>"
+    return "Sucesso", 200
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
