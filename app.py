@@ -11,8 +11,8 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'chave-super-secreta-troque-isso')
 
 USUARIOS = {
-    "admin": "gunsn1177",
-    "lucas rolim": "guns117"
+    "admin": "mom1234",
+    "lucas rolim": "momb123"
 }
 
 s3_client = boto3.client(
