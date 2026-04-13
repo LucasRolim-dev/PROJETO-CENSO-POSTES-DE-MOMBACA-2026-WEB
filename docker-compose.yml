@@ -1,23 +1,37 @@
 version: '3.8'
+
 services:
   web-censo:
-    image: node:latest
+    build: .                        # usa seu Dockerfile
     ports:
-      - "3000:80"
+      - "3000:3000"                 # host:container correto
     networks:
       - rede-publica
       - rede-privada
     environment:
       - DB_HOST=db-censo
+      - DB_USER=censo_user
+      - DB_PASSWORD=censo_password_2026
+      - DB_NAME=censo_db
+    depends_on:
+      - db-censo                    # aguarda o banco subir
 
   db-censo:
-    image: postgres:latest
+    image: postgres:16              # versão fixa
+    networks:
+      - rede-privada                # banco NUNCA exposto na rede pública
     environment:
+      - POSTGRES_USER=censo_user
       - POSTGRES_PASSWORD=censo_password_2026
+      - POSTGRES_DB=censo_db
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data  # dados persistentes
+
+volumes:
+  dados_postgres:
 
 networks:
   rede-publica:
     driver: bridge
   rede-privada:
     driver: bridge
-    
