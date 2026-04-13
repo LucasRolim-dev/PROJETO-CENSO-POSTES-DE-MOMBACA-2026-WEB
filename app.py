@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'chave-super-secreta-troque-isso')
 
 USUARIOS = {
-    "admin": "mom1234",
+    "admin": "momb1234",
     "lucas rolim": "momb123"
 }
 
