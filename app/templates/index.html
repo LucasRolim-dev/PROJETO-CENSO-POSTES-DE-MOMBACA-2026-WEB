@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>Censo Poste | Mombaça 2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #3b82f6; --primary-dark: #1d4ed8;
+            --primary-glow: rgba(59,130,246,0.3);
+            --bg: #0a0a0f; --card: #1a1a26; --border: #2a2a3a;
+            --input-bg: #0f0f18; --text: #f0f0ff; --text-dim: #8888aa;
+            --danger: #ef4444; --radius: 14px; --radius-sm: 8px;
+        }
+        body {
+            font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+            min-height: 100dvh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: clamp(16px,4vw,40px);
+            background-image: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,0.12), transparent 70%);
+        }
+        .topbar {
+            width:100%; max-width:460px; display:flex; justify-content:space-between;
+            align-items:center; margin-bottom:clamp(8px,2vw,14px); padding:0 4px;
+        }
+        .topbar-user { font-size:clamp(12px,2vw,13px); color:var(--text-dim); display:flex; align-items:center; gap:6px; }
+        .topbar-user strong { color:var(--primary); font-family:'Syne',sans-serif; }
+        .btn-logout {
+            font-size:12px; color:var(--danger); text-decoration:none; font-weight:600;
+            border:1px solid rgba(239,68,68,.35); padding:5px 12px; border-radius:20px;
+            transition:.2s; white-space:nowrap;
+        }
+        .btn-logout:hover { background:var(--danger); color:#fff; }
+        .card {
+            background:var(--card); border:1px solid var(--border);
+            border-radius:clamp(16px,3vw,24px); width:100%; max-width:460px;
+            padding:clamp(24px,5vw,44px) clamp(20px,5vw,40px);
+            box-shadow:0 25px 60px rgba(0,0,0,0.6);
+            animation:fadeUp .4s ease both;
+        }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(18px) } to { opacity:1; transform:none } }
+        .logo {
+            width:clamp(48px,8vw,64px); height:clamp(48px,8vw,64px);
+            background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(29,78,216,.1));
+            border:1px solid rgba(59,130,246,.3); border-radius:16px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:clamp(22px,4vw,30px); margin:0 auto clamp(14px,3vw,20px);
+        }
+        h1 { font-family:'Syne',sans-serif; font-size:clamp(16px,3vw,20px); color:var(--primary); text-align:center; margin-bottom:6px; }
+        .subtitle { font-size:clamp(11px,2vw,13px); color:var(--text-dim); text-align:center; margin-bottom:clamp(18px,3vw,28px); }
+        .progress-bar { height:3px; background:var(--border); border-radius:2px; margin-bottom:clamp(18px,3vw,26px); overflow:hidden; }
+        .progress-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--primary),#60a5fa); border-radius:2px; transition:width .4s ease; }
+        .field { margin-bottom:clamp(14px,3vw,20px); }
+        label { display:block; margin-bottom:7px; font-size:13px; font-weight:500; color:var(--text-dim); }
+        input[type="text"], select {
+            width:100%; padding:clamp(10px,2vw,13px) clamp(12px,2.5vw,16px);
+            border-radius:var(--radius-sm); border:1px solid var(--border);
+            background:var(--input-bg); color:var(--text);
+            font-family:'DM Sans',sans-serif; font-size:clamp(14px,2vw,15px);
+            outline:none; transition:.25s; -webkit-appearance:none; -moz-appearance: none; appearance: none;
+        }
+        input:focus, select:focus { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow); }
+        .search-box { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--input-bg); transition:.25s; }
+        .search-box:focus-within { border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-glow); }
+        .search-box input { border:none; border-bottom:1px solid var(--border); border-radius:0; box-shadow:none !important; }
+        .search-box select { border:none; border-radius:0; background:transparent; height:clamp(120px,20vw,155px); cursor:pointer; box-shadow:none !important; }
+        .divider { border:none; border-top:1px solid var(--border); margin:clamp(14px,3vw,22px) 0; }
+        @keyframes glow-pulse {
+            0%   { box-shadow:0 0 0 2px var(--primary),0 0 10px var(--primary-glow); }
+            50%  { box-shadow:0 0 0 3px var(--primary),0 0 20px rgba(59,130,246,.5); }
+            100% { box-shadow:0 0 0 2px var(--primary),0 0 10px var(--primary-glow); }
+        }
+        .glow { border-color:var(--primary) !important; animation:glow-pulse 2s infinite ease-in-out; }
+        .btn {
+            width:100%; padding:clamp(12px,2.5vw,15px); border-radius:var(--radius-sm); border:none;
+            background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+            color:#fff; font-family:'Syne',sans-serif; font-size:clamp(14px,2vw,16px); font-weight:700;
+            cursor:pointer; margin-top:clamp(8px,2vw,12px); transition:.2s;
+            box-shadow:0 4px 20px rgba(59,130,246,.3);
+        }
+        .btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 28px rgba(59,130,246,.45); }
+        .btn:disabled { opacity:.6; cursor:not-allowed; }
+        @media (max-width:360px) { .card { padding:20px 16px; } }
+        @media (max-height:500px) and (orientation:landscape) { .logo { display:none; } body { justify-content:flex-start; } }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-user">👤 <strong>{{ usuario }}</strong></div>
+  <a href="/logout" class="btn-logout">Sair ↩</a>
+</div>
+
+<div class="card">
+  <div class="logo">💡</div>
+  <h1>CENSO DE POSTES</h1>
+  <p class="subtitle">Mombaça 2026 · Registro de campo</p>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+
+  <form id="form">
+    <div class="field">
+      <label>ID do Poste</label>
+      <input type="text" id="id_poste" name="id_poste" placeholder="Ex: P-117"
+             autocomplete="off" inputmode="text" required
+             oninput="glow(this); progress()">
+    </div>
+
+    <hr class="divider">
+
+    <div class="field">
+      <label>Bairro</label>
+      <div class="search-box">
+        <input type="text" id="busca_bairro" placeholder="🔍 Pesquisar bairro..."
+               onkeyup="filter('busca_bairro','sel_bairro')">
+        <select name="bairro" id="sel_bairro" size="5" required
+                onchange="pick('sel_bairro','busca_bairro'); progress()">
+          {% for b in bairros %}
+          <option value="{{ b }}">{{ b }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Rua / Avenida</label>
+      <div class="search-box">
+        <input type="text" id="busca_rua" placeholder="🔍 Pesquisar rua..."
+               onkeyup="filter('busca_rua','sel_rua')">
+        <select name="rua" id="sel_rua" size="5" required
+                onchange="pick('sel_rua','busca_rua'); progress()">
+          {% for r in ruas %}
+          <option value="{{ r }}">{{ r }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <button type="button" class="btn" id="btn" onclick="enviar()">💾 Salvar na Nuvem</button>
+  </form>
+</div>
+
+<script>
+  const SWL = (t,tx,ic) => Swal.fire({title:t,text:tx,icon:ic,background:'#1a1a26',color:'#f0f0ff',confirmButtonColor:'#3b82f6'});
+
+  function glow(el) {
+    el.value.trim() ? el.classList.add('glow') : el.classList.remove('glow');
+  }
+
+  function progress() {
+    const vals = [
+      document.getElementById('id_poste').value.trim(),
+      document.getElementById('sel_bairro').value,
+      document.getElementById('sel_rua').value,
+    ];
+    document.getElementById('prog').style.width = (vals.filter(Boolean).length / 3 * 100) + '%';
+  }
+
+  function filter(inputId, selectId) {
+    const f = document.getElementById(inputId).value.toUpperCase();
+    [...document.getElementById(selectId).options].forEach(o => {
+      o.style.display = o.text.toUpperCase().includes(f) ? '' : 'none';
+    });
+  }
+
+  function pick(selectId, inputId) {
+    const v = document.getElementById(selectId).value;
+    const i = document.getElementById(inputId);
+    i.value = v;
+    i.classList.add('glow');
+  }
+
+  function enviar() {
+    const id     = document.getElementById('id_poste').value.trim();
+    const bairro = document.getElementById('sel_bairro').value;
+    const rua    = document.getElementById('sel_rua').value;
+
+    if (!id || !bairro || !rua) { SWL('Atenção!','Preencha todos os campos.','warning'); return; }
+
+    const btn = document.getElementById('btn');
+    btn.textContent = '⏳ Salvando...';
+    btn.disabled = true;
+
+    fetch('/salvar', { method:'POST', body: new FormData(document.getElementById('form')) })
+    .then(r => {
+      if (r.ok) {
+        SWL('Salvo!','Dados enviados para a nuvem.','success');
+        document.getElementById('form').reset();
+        ['id_poste','busca_bairro','busca_rua'].forEach(id => document.getElementById(id).classList.remove('glow'));
+        document.getElementById('prog').style.width = '0%';
+      } else if (r.status === 401) {
+        SWL('Sessão expirada','Faça login novamente.','warning').then(() => location.href='/login');
+      } else {
+        r.json().then(d => SWL('Erro', d.erro || 'Falha ao salvar.', 'error'));
+      }
+    })
+    .catch(e => SWL('Erro Técnico', e.message, 'error'))
+    .finally(() => { btn.textContent = '💾 Salvar na Nuvem'; btn.disabled = false; });
+  }
+</script>
+</body>
+</html>
