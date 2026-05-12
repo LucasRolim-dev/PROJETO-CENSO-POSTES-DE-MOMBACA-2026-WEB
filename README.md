@@ -119,72 +119,10 @@ O **Web-Censo** é uma aplicação Full Stack desenvolvida como projeto prático
 ## 🖥️ Interface do Sistema
 
 ### Tela de Login
-```
-┌─────────────────────────────────┐
-│                                 │
-│             💡                  │
-│       CENSO DE POSTES           │
-│    Mombaça 2026 · Acesso        │
-│           Restrito              │
-│                                 │
-│  Usuário                        │
-│  ┌─────────────────────────┐    │
-│  │ Digite seu usuário  👤  │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  Senha                          │
-│  ┌─────────────────────────┐    │
-│  │ ••••••••••••••••••  🔒  │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  ┌─────────────────────────┐    │
-│  │       Entrar →          │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  Prefeitura Municipal de        │
-│      Mombaça · CE               │
-└─────────────────────────────────┘
-```
+![Tela de Login](docs/screenshots/screenshot_login.png)
 
 ### Formulário de Cadastro
-```
-👤 agente1                    [Sair ↩]
-┌─────────────────────────────────┐
-│            💡                   │
-│      CENSO DE POSTES            │
-│  Mombaça 2026 · Registro de     │
-│            campo                │
-│  ████████████░░░░  (progresso)  │
-│                                 │
-│  ID do Poste                    │
-│  ┌─────────────────────────┐    │
-│  │ Ex: P-117               │    │
-│  └─────────────────────────┘    │
-│ ─────────────────────────────── │
-│  Bairro                         │
-│  ┌─────────────────────────┐    │
-│  │ 🔍 Pesquisar bairro...  │    │
-│  ├─────────────────────────┤    │
-│  │ Alto do Clube           │    │
-│  │ Antonio Felinto         │    │
-│  │ ► Centro ◄              │    │  ← selecionado
-│  │ Ipiranga                │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  Rua / Avenida                  │
-│  ┌─────────────────────────┐    │
-│  │ 🔍 Pesquisar rua...     │    │
-│  ├─────────────────────────┤    │
-│  │ R. Mae Teresinha        │    │
-│  └─────────────────────────┘    │
-│                                 │
-│  ┌─────────────────────────┐    │
-│  │  💾 Salvar na Nuvem     │    │
-│  └─────────────────────────┘    │
-└─────────────────────────────────┘
-```
-
-> 📹 **[Assista à demo completa do sistema](#)** ← adicione o link do vídeo aqui
+![Formulário de Cadastro](docs/screenshots/screenshot_formulario.png)
 
 ---
 
